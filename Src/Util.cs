@@ -51,19 +51,6 @@ namespace MissileReflex.Src
             return (int)((1000) * second);
         }
 
-        public static Vector3 FixX(this Vector3 before, float x)
-        {
-            return new Vector3(x, before.y, before.z);
-        }
-        public static Vector3 FixY(this Vector3 before, float y)
-        {
-            return new Vector3(before.x, y, before.z);
-        }
-        public static Vector3 FixZ(this Vector3 before, float z)
-        {
-            return new Vector3(before.x, before.y, z);
-        }
-        
         public static Color FixAlpha(this Color before, float a)
         {
             var newColor = before;
