@@ -8,26 +8,38 @@ namespace MissileReflex.Src.Battle
     public class Player : MonoBehaviour
     {
         [SerializeField] private Rigidbody rigidbody;
-        [SerializeField] private float forceSize = 5;
+        
+        [SerializeField] private float accelSize = 10;
+        [SerializeField] private float maxSpeed = 5;
+        [SerializeField] private float velocityAttenuation = 0.5f;
 
-        private Vector3 _velocityOld;
         private Camera mainCamera => Camera.main;
 
         [EventFunction]
         private void Update()
         {
-            _velocityOld = rigidbody.velocity;
+            checkInputMove();
+
+            // カメラ位置調整
+            mainCamera.transform.position = gameObject.transform.position.FixY(mainCamera.transform.position.y);
+        }
+
+        private void checkInputMove()
+        {
+            var inputVec = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+
+            // 加速
+            rigidbody.velocity += inputVec * accelSize * Time.deltaTime;
+            if (rigidbody.velocity.sqrMagnitude > maxSpeed * maxSpeed)
+                rigidbody.velocity = rigidbody.velocity.normalized * maxSpeed;
+
+            // 減衰
+            if (inputVec == Vector3.zero) rigidbody.velocity *= velocityAttenuation;
         }
 
         [EventFunction]
         private void FixedUpdate()
-        {
-            var inputVec = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            
-            rigidbody.AddForce(inputVec * forceSize);
-            
-            mainCamera.transform.position = gameObject.transform.position.FixY(mainCamera.transform.position.y);
-        }
+        { }
 
         [EventFunction]
         private void OnCollisionEnter(Collision collision)
