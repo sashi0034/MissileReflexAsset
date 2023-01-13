@@ -5,8 +5,10 @@ using UnityEngine;
 
 namespace MissileReflex.Src.Battle
 {
+    [DisallowMultipleComponent]
     public class Player : MonoBehaviour
     {
+        [SerializeField] private BattleRoot battleRoot;
         [SerializeField] private Rigidbody rigidbody;
         
         [SerializeField] private float accelSize = 10;
@@ -19,6 +21,8 @@ namespace MissileReflex.Src.Battle
         private void Update()
         {
             checkInputMove();
+            
+            checkInputShoot();
 
             // カメラ位置調整
             mainCamera.transform.position = gameObject.transform.position.FixY(mainCamera.transform.position.y);
@@ -35,6 +39,31 @@ namespace MissileReflex.Src.Battle
 
             // 減衰
             if (inputVec == Vector3.zero) rigidbody.velocity *= velocityAttenuation;
+        }
+
+        private void checkInputShoot()
+        {
+            if (Input.GetMouseButtonDown(0) == false) return;
+
+            var playerPos = transform.position;
+            var distancePlayerCamera = Vector3.Distance(playerPos, mainCamera.transform.position); 
+            var mousePos = Input.mousePosition.FixZ(distancePlayerCamera);
+            var worldMousePos = mainCamera.ScreenToWorldPoint(mousePos);
+
+            var shotDirection = (worldMousePos - playerPos).normalized;
+                
+            shootMissile(shotDirection);
+        }
+
+        private void shootMissile(Vector3 initialVel)
+        {
+            var initialPos = transform.position;
+
+            const float missileSpeed = 10f;
+            battleRoot.MissileManager.ShootMissile(new MissileInitArg(
+                new MissileSourceData(missileSpeed),
+                initialPos,
+                initialVel));
         }
 
         [EventFunction]

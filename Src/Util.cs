@@ -3,6 +3,12 @@ using DG.Tweening;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+namespace System.Runtime.CompilerServices
+{
+    // recordを使用可能にする
+    internal sealed class IsExternalInit{ }
+}
+
 namespace MissileReflex.Src
 {
     public static class Util
@@ -64,6 +70,11 @@ namespace MissileReflex.Src
             actor.gameObject.SetActive(true);
         }
 
+        public static T DebugTrace<T>(this T target) where T : IFormattable
+        {
+            Debug.Log(target.ToString());
+            return target;
+        }
     }
     
     [AttributeUsage(AttributeTargets.Method)]
