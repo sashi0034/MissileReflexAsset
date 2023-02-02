@@ -1,4 +1,4 @@
-﻿namespace MissileReflex.Src
+﻿namespace MissileReflex.Src.Utils
 {
     public interface IBoolFlagTaker
     {

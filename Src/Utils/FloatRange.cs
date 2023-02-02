@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MissileReflex.Src
+namespace MissileReflex.Src.Utils
 {
     public readonly struct FloatRange
     {

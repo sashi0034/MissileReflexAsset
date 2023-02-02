@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using MissileReflex.Src.Params;
+using MissileReflex.Src.Utils.Params;
 using TMPro;
 using UnityEngine;
 
-namespace MissileReflex.Src
+namespace MissileReflex.Src.Utils
 {
     public class LogCanvas : MonoBehaviour
     {

@@ -9,7 +9,7 @@ namespace System.Runtime.CompilerServices
     internal sealed class IsExternalInit{ }
 }
 
-namespace MissileReflex.Src
+namespace MissileReflex.Src.Utils
 {
     public static class Util
     {

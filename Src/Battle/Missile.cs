@@ -3,7 +3,7 @@
 using System;
 using UnityEngine;
 
-namespace MissileReflex.Src.Battle
+namespace MissileReflex.Src.Utils.Battle
 {
     public record MissileSourceData(
         float Speed)

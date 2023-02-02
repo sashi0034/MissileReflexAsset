@@ -1,7 +1,7 @@
 ﻿using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace MissileReflex.Src.Params
+namespace MissileReflex.Src.Utils.Params
 {
     public class DebugParam : SingletonScriptableObject<DebugParam>
     {

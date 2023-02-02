@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace MissileReflex.Src
+namespace MissileReflex.Src.Utils
 {
     public static class Logger
     {

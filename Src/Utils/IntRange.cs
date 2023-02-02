@@ -1,6 +1,6 @@
 ﻿using Math = System.Math;
 
-namespace MissileReflex.Src
+namespace MissileReflex.Src.Utils
 {
     public readonly struct IntRange
     {

@@ -3,7 +3,7 @@
 using System;
 using UnityEngine;
 
-namespace MissileReflex.Src.Battle
+namespace MissileReflex.Src.Utils.Battle
 {
     [DisallowMultipleComponent]
     public class Player : MonoBehaviour
@@ -15,6 +15,10 @@ namespace MissileReflex.Src.Battle
         [SerializeField] private float maxSpeed = 5;
         [SerializeField] private float velocityAttenuation = 0.5f;
 
+        [SerializeField] private PlayerCannon playerCannon;
+
+        [SerializeField] private PlayerLeg playerLeg;
+
         private Camera mainCamera => Camera.main;
 
         [EventFunction]
@@ -22,7 +26,7 @@ namespace MissileReflex.Src.Battle
         {
             checkInputMove();
             
-            checkInputShoot();
+            updateInputShoot();
 
             // カメラ位置調整
             mainCamera.transform.position = gameObject.transform.position.FixY(mainCamera.transform.position.y);
@@ -32,6 +36,16 @@ namespace MissileReflex.Src.Battle
         {
             var inputVec = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
 
+            bool hasInput = inputVec != Vector3.zero;
+            
+            // 移動アニメ制御
+            playerLeg.AnimRun(hasInput);
+            
+            if (hasInput)
+            {
+                playerLeg.LerpLegRotation(Time.deltaTime, inputVec);
+            }
+            
             // 加速
             rigidbody.velocity += inputVec * accelSize * Time.deltaTime;
             if (rigidbody.velocity.sqrMagnitude > maxSpeed * maxSpeed)
@@ -41,18 +55,18 @@ namespace MissileReflex.Src.Battle
             if (inputVec == Vector3.zero) rigidbody.velocity *= velocityAttenuation;
         }
 
-        private void checkInputShoot()
+        private void updateInputShoot()
         {
-            if (Input.GetMouseButtonDown(0) == false) return;
-
             var playerPos = transform.position;
             var distancePlayerCamera = Vector3.Distance(playerPos, mainCamera.transform.position); 
             var mousePos = Input.mousePosition.FixZ(distancePlayerCamera);
             var worldMousePos = mainCamera.ScreenToWorldPoint(mousePos);
 
             var shotDirection = (worldMousePos - playerPos).normalized;
-                
-            shootMissile(shotDirection);
+
+            playerCannon.LerpCannonRotation(Time.deltaTime, shotDirection);
+            
+            if (Input.GetMouseButtonDown(0)) shootMissile(shotDirection);
         }
 
         private void shootMissile(Vector3 initialVel)
