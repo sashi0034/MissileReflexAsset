@@ -11,6 +11,7 @@ namespace MissileReflex.Src.Utils.Battle
         public void ShootMissile(MissileInitArg arg)
         {
             var missile = Instantiate(missilePrefab, this.transform);
+            missile.transform.position = missile.transform.position.FixY(0.5f);
             missile.Init(arg);
         }
         
