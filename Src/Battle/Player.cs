@@ -19,6 +19,8 @@ namespace MissileReflex.Src.Utils.Battle
 
         [SerializeField] private PlayerLeg playerLeg;
 
+        [SerializeField] private GameObject viewObject;
+
         private Camera mainCamera => Camera.main;
 
         [EventFunction]
@@ -44,6 +46,7 @@ namespace MissileReflex.Src.Utils.Battle
             if (hasInput)
             {
                 playerLeg.LerpLegRotation(Time.deltaTime, inputVec);
+                trickViewRotation();
             }
             
             // 加速
@@ -53,6 +56,12 @@ namespace MissileReflex.Src.Utils.Battle
 
             // 減衰
             if (inputVec == Vector3.zero) rigidbody.velocity *= velocityAttenuation;
+        }
+
+        private void trickViewRotation()
+        {
+            viewObject.transform.localRotation =
+                Quaternion.Euler(Vector3.right * (45 - 15 * Mathf.Sin(playerLeg.GetLegRotRadY())));
         }
 
         private void updateInputShoot()

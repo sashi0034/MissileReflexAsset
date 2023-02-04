@@ -11,10 +11,10 @@ namespace MissileReflex.Src.Utils.Battle
 
         public void LerpCannonRotation(float deltaTime, Vector3 direction)
         {
-            cannonView.transform.rotation = Quaternion.Euler(
+            cannonView.transform.localRotation = Quaternion.Euler(
                 0,
                 Mathf.LerpAngle(
-                    cannonView.transform.rotation.eulerAngles.y,
+                    cannonView.transform.localRotation.eulerAngles.y,
                     Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg,
                     deltaTime * 20),
                 0);

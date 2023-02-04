@@ -2549,6 +2549,7 @@ MonoBehaviour:
   playerLeg:
     legView: {fileID: 477337191}
     legAnimator: {fileID: 422743009559992894}
+  viewObject: {fileID: 284033811}
 --- !u!54 &356126560
 Rigidbody:
   m_ObjectHideFlags: 0
