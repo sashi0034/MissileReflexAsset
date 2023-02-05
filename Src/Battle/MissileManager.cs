@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using MissileReflex.Src.Battle;
+using MissileReflex.Src.Utils;
+using UnityEngine;
 
-namespace MissileReflex.Src.Utils.Battle
+namespace MissileReflex.Src.Battle
 {
     [DisallowMultipleComponent]
     public class MissileManager : MonoBehaviour

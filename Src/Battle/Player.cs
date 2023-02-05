@@ -1,9 +1,10 @@
 ﻿#nullable enable
 
-using System;
+using MissileReflex.Src.Battle;
+using MissileReflex.Src.Utils;
 using UnityEngine;
 
-namespace MissileReflex.Src.Utils.Battle
+namespace MissileReflex.Src.Battle
 {
     [DisallowMultipleComponent]
     public class Player : MonoBehaviour

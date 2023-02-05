@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MissileReflex.Src.Utils.Params
+namespace MissileReflex.Src.Params
 {
     public abstract class SingletonScriptableObject<T> : ScriptableObject where T : SingletonScriptableObject<T>
     {

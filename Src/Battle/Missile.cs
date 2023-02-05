@@ -1,10 +1,9 @@
 ﻿#nullable enable
 
-using System;
-using DG.Tweening;
+using MissileReflex.Src.Utils;
 using UnityEngine;
 
-namespace MissileReflex.Src.Utils.Battle
+namespace MissileReflex.Src.Battle
 {
     public record MissileSourceData(
         float Speed)
@@ -22,14 +21,21 @@ namespace MissileReflex.Src.Utils.Battle
     public class Missile : MonoBehaviour
     {
         [SerializeField] private Rigidbody rigidBody;
+        public Rigidbody Rigidbody => rigidBody;
+        
         [SerializeField] private GameObject view;
+        [SerializeField] private int lifeTimeReflectedCount = 3;
 
         private Vector3 viewInitialRotation;
         private float viewRotationAnimX = 0;
 
         private MissileSourceData _data = MissileSourceData.Empty;
-        private Vector3 _velocityOld;
-        private Vector3 _positionOld;
+        private MissilePhysic _physic;
+
+        public Missile()
+        {
+            _physic = new MissilePhysic(this);
+        }
 
         public void Init(MissileInitArg arg)
         {
@@ -43,13 +49,13 @@ namespace MissileReflex.Src.Utils.Battle
         [EventFunction]
         private void Update()
         {
-            _positionOld = transform.position;
-            _velocityOld = rigidBody.velocity;
-            gameObject.transform.rotation = Quaternion.Euler(
-                0,
-                -Mathf.Atan2(_velocityOld.z, _velocityOld.x) * Mathf.Rad2Deg,
-                0);
-            
+            _physic.Update();
+            if (_physic.ReflectedCount >= lifeTimeReflectedCount)
+            {
+                Util.DestroyGameObject(this.gameObject);
+                return;
+            }
+
             updateViewAnim(Time.deltaTime);
         }
 
@@ -68,11 +74,7 @@ namespace MissileReflex.Src.Utils.Battle
         [EventFunction]
         private void OnCollisionEnter(Collision collision)
         {
-            var vecIn = _velocityOld.FixY(0);
-            var vecNorm = collision.contacts[0].normal.FixY(0);
-            var vecReflect = Vector3.Reflect(vecIn, vecNorm);
-            rigidBody.velocity = vecReflect;
-            transform.position = _positionOld;
+            _physic.OnCollisionEnter(collision);
         }
     }
 }

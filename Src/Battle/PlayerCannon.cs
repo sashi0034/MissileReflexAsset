@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace MissileReflex.Src.Utils.Battle
+namespace MissileReflex.Src.Battle
 {
     [Serializable]
     public struct PlayerCannon

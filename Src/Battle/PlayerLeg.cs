@@ -1,8 +1,9 @@
 ﻿using System;
+using MissileReflex.Src.Utils;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 
-namespace MissileReflex.Src.Utils.Battle
+namespace MissileReflex.Src.Battle
 {
     [Serializable]
     public struct PlayerLeg

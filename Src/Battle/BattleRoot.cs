@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace MissileReflex.Src.Utils.Battle
+namespace MissileReflex.Src.Battle
 {
     [DisallowMultipleComponent]
     public class BattleRoot : MonoBehaviour
