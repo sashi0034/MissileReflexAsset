@@ -62,7 +62,7 @@ namespace MissileReflex.Src.Battle
         private void trickViewRotation()
         {
             viewObject.transform.localRotation =
-                Quaternion.Euler(Vector3.right * (45 - 15 * Mathf.Sin(playerLeg.GetLegRotRadY())));
+                Quaternion.Euler(Vector3.right * (30 - 10 * Mathf.Sin(playerLeg.GetLegRotRadY())));
         }
 
         private void updateInputShoot()
