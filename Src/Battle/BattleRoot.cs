@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace MissileReflex.Src.Battle
 {
@@ -10,6 +11,15 @@ namespace MissileReflex.Src.Battle
 
         [SerializeField] private Player player;
         public Player Player => player;
-        
+
+        public void Start()
+        {
+            Init();            
+        }
+
+        public void Init()
+        {
+            player.Init();
+        }
     }
 }
