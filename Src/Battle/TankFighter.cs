@@ -99,8 +99,11 @@ namespace MissileReflex.Src.Battle
         
         private void trickViewRotation()
         {
+            const float trickDefaultAngle = 30;
+            const float trickDeltaAngle = 15;
+            
             viewObject.transform.localRotation =
-                Quaternion.Euler(Vector3.right * (30 - 10 * Mathf.Sin(tankFighterLeg.GetLegRotRadY())));
+                Quaternion.Euler(Vector3.right * (trickDefaultAngle - Mathf.Max(trickDeltaAngle * Mathf.Sin(tankFighterLeg.GetLegRotRadY()), 0)));
         }
         
         private void updateInputShoot()

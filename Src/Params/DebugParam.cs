@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace MissileReflex.Src.Params
 {
+    [CreateAssetMenu(fileName = nameof(DebugParam), menuName = "ScriptableObjects/Create" + nameof(DebugParam))]
     public class DebugParam : SingletonScriptableObject<DebugParam>
     {
         private const string tagBuildIn = "BuildIn";
