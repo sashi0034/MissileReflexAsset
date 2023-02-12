@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using DG.Tweening;
 using MissileReflex.Src.Params;
 using MissileReflex.Src.Utils;
 using Sirenix.OdinInspector;
@@ -47,6 +48,28 @@ namespace MissileReflex.Src.Battle
     {
         public BattleRoot BattleRoot { get; }
     }
+
+    public class TankFighterHp
+    {
+        private float _value = 0;
+        public float Value => _value;
+
+        public void Init(float value)
+        {
+            this._value = value;
+        }
+
+        public void CauseDamage(float value)
+        {
+            _value = Mathf.Max(0, _value - value);
+        }
+    }
+
+    public enum ETankFighterState
+    {
+        Alive,
+        Dead
+    }
     
     // TankFighterはAgentから動かす
     public class TankFighter : MonoBehaviour
@@ -67,12 +90,27 @@ namespace MissileReflex.Src.Battle
         private readonly TankFighterInput _input = new TankFighterInput();
         public TankFighterInput Input => _input;
 
-        [SerializeField] private float maxShotCoolingTime = 0.5f;
+        private readonly TankFighterHp _hp = new TankFighterHp();
+        public TankFighterHp Hp => _hp;
+
+        [SerializeField] private float maxShotCoolingTime;
         private float _shotCoolingTime = 0;
+
+        private ETankFighterState _state = ETankFighterState.Alive;
         
         [EventFunction]
         private void Update()
         {
+            if (_state == ETankFighterState.Dead) return;
+
+            if (_hp.Value <= 0)
+            {
+                // 死んだ
+                _state = ETankFighterState.Dead;
+                transform.DORotate(new Vector3(0, 0, 180), 0.5f).SetEase(Ease.OutBack);
+                return;
+            }
+            
             checkInputMove();
             
             updateInputShoot(Time.deltaTime);
@@ -84,9 +122,16 @@ namespace MissileReflex.Src.Battle
         {
             _parentAgent = agent;
             _input.Init();
+            _hp.Init(1);
             _shotCoolingTime = 0;
+            _state = ETankFighterState.Alive;
 
             if (material != null) ChangeMaterial(material);
+        }
+
+        public bool IsAlive()
+        {
+            return _state != ETankFighterState.Dead;
         }
 
         [Button]

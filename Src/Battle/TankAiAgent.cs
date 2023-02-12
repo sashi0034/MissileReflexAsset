@@ -15,7 +15,8 @@ namespace MissileReflex.Src.Battle
         [SerializeField] private float updateInterval = 0.1f;
         public float UpdateInterval => updateInterval;
         
-        [SerializeField] private float shotRange = 5;
+        [SerializeField] private float shotRange = 10;
+        public float ShotRange => shotRange;
         public float ShotRangeSqrMag => shotRange * shotRange;
 
         [SerializeField] private float retrieveDuration = 0.3f;
@@ -35,7 +36,7 @@ namespace MissileReflex.Src.Battle
 
         [SerializeField] private NavMeshAgent navAi;
 
-        private TankAiAgentParam param => ConstParam.Instance.TankAiAgentParam;
+        private static TankAiAgentParam param => ConstParam.Instance.TankAiAgentParam;
 
         [EventFunction]
         private void Start()
@@ -67,11 +68,9 @@ namespace MissileReflex.Src.Battle
                 await UniTask.Delay(param.UpdateInterval.ToIntMilli());
 
                 var targetTank = battleRoot.Player.Tank;
-                var targetSqrMag = calcSqrMagSelfWithTargetTank(targetTank);
+                var selfPos = selfTank.transform.position;
 
-                var shotRangeSqrMag = param.ShotRangeSqrMag;
-
-                if (targetSqrMag < shotRangeSqrMag)
+                if (isNoWallBetweenTargetTank(selfPos, targetTank))
                 {
                     // 射程内に入ってるので退き撃ち
                     await shotWithRetreat(targetTank);
@@ -85,10 +84,36 @@ namespace MissileReflex.Src.Battle
             }
         }
 
+        private static bool isNoWallBetweenTargetTank(Vector3 selfPos, TankFighter targetTank)
+        {
+            var targetPos = targetTank.transform.position;
+            
+            if (Physics.Raycast(selfPos, targetPos - selfPos, out var rayHit, param.ShotRange) == false) 
+                return false;
+            
+            return rayHit.transform == targetTank.transform;
+        }
+
         private async UniTask shotWithRetreat(TankFighter targetTank)
         {
-            var destVec = calcDestVecToTarget(targetTank);
-            var rotatedDestVec = Quaternion.Euler(0, Random.Range(0, 2) == 0 ? 90 : -90, 0) * destVec;
+            var selfPos = selfTank.transform.position;
+            var targetPos = targetTank.transform.position;
+            // var destVec = calcDestVecToTarget(targetTank);
+            var destVec = targetPos - selfPos;
+            
+            var rotatedDestVec1 = Quaternion.Euler(0, 90, 0) * destVec;
+            var rotatedDestVec2 = Quaternion.Euler(0, -90, 0) * destVec;
+
+            var spaceVec1 = Physics.Raycast(selfPos, rotatedDestVec1, out var rayHit1, param.ShotRange)
+                ? rayHit1.distance
+                : param.ShotRange;
+            var spaceVec2 = Physics.Raycast(selfPos, rotatedDestVec2, out var rayHit2, param.ShotRange)
+                ? rayHit2.distance
+                : param.ShotRange;
+
+            // 90度回転させたベクトルのうち、壁までの距離がより遠い方を方向として選択
+            var rotatedDestVec = spaceVec1 < spaceVec2 ? rotatedDestVec2 : rotatedDestVec1;
+            
             tankIn.SetMoveVec(rotatedDestVec.normalized);
             tankIn.SetShotRadFromVec3(destVec);
             tankIn.ShotRequest.UpFlag();
