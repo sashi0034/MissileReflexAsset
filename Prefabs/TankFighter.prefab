@@ -4692,10 +4692,13 @@ MonoBehaviour:
   tankFighterCannon:
     cannonView: {fileID: 3648584614671432478}
     cannonAnimator: {fileID: 3648584614144752815}
+    cannonMesh: {fileID: 3648584614148850287}
   tankFighterLeg:
     legView: {fileID: 4900318780664389374}
     legAnimator: {fileID: 4745825822160769703}
+    legMesh: {fileID: 4745825822156598375}
   viewObject: {fileID: 4900318780454898570}
+  maxShotCoolingTime: 0.5
 --- !u!54 &4900318780997718827
 Rigidbody:
   m_ObjectHideFlags: 0

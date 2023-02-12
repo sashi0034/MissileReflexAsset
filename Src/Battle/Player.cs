@@ -17,9 +17,11 @@ namespace MissileReflex.Src.Battle
 
         private Camera mainCamera => Camera.main;
 
+        public Vector3 TankPos => _selfTank.transform.position;
+
         public void Init()
         {
-            _selfTank.Init(this);
+            _selfTank.Init(this, null);
         }
 
         [EventFunction]

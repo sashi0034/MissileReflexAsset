@@ -8,6 +8,7 @@ namespace MissileReflex.Src.Params
     {
         // [SerializeField] private float missileOffsetY = 0.5f;
         // public float MissileOffsetY => missileOffsetY;
-    
+        
+        public const float DeltaMilliF = 1e-3f;
     }
 }

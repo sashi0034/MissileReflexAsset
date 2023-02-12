@@ -1,14 +1,16 @@
 ﻿#nullable enable
 using System;
+using MissileReflex.Src.Params;
 using MissileReflex.Src.Utils;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace MissileReflex.Src.Battle
 {
     public class TankFighterInput
     {
-        private Vector2 _moveVec = Vector2.zero;
-        public Vector2 MoveVec => _moveVec;
+        private Vector3 _moveVec = Vector3.zero;
+        public Vector3 MoveVec => _moveVec;
 
         private float _shotRad = 0;
         public float ShotRad => _shotRad;
@@ -18,14 +20,14 @@ namespace MissileReflex.Src.Battle
 
         public void Init()
         {
-            _moveVec = Vector2.zero;
+            _moveVec = Vector3.zero;
             _shotRad = 0;
             _shotRequest.Clear();
         }
 
-        public void SetMoveVec(Vector2 move)
+        public void SetMoveVec(Vector3 move)
         {
-            Debug.Assert(move.SqrMagnitude() <= 1);
+            Debug.Assert(Vector3.SqrMagnitude(move) <= 1 + ConstParam.DeltaMilliF);
             _moveVec = move;
         }
 
@@ -58,24 +60,39 @@ namespace MissileReflex.Src.Battle
 
         private readonly TankFighterInput _input = new TankFighterInput();
         public TankFighterInput Input => _input;
+
+        [SerializeField] private float maxShotCoolingTime = 0.5f;
+        private float _shotCoolingTime = 0;
         
         [EventFunction]
         private void Update()
         {
             checkInputMove();
             
-            updateInputShoot();
+            updateInputShoot(Time.deltaTime);
         }
 
-        public void Init(ITankAgent agent)
+        public void Init(
+            ITankAgent agent,
+            Material? material)
         {
             _parentAgent = agent;
             _input.Init();
+            _shotCoolingTime = 0;
+
+            if (material != null) ChangeMaterial(material);
+        }
+
+        [Button]
+        public void ChangeMaterial(Material material)
+        {
+            tankFighterLeg.ChangeMaterial(material);
+            tankFighterCannon.ChangeMaterial(material);
         }
         
         private void checkInputMove()
         {
-            var inputVec = new Vector3(UnityEngine.Input.GetAxisRaw("Horizontal"), 0, UnityEngine.Input.GetAxisRaw("Vertical")).normalized;
+            var inputVec = _input.MoveVec;
 
             bool hasInput = inputVec != Vector3.zero;
             
@@ -106,13 +123,20 @@ namespace MissileReflex.Src.Battle
                 Quaternion.Euler(Vector3.right * (trickDefaultAngle - Mathf.Max(trickDeltaAngle * Mathf.Sin(tankFighterLeg.GetLegRotRadY()), 0)));
         }
         
-        private void updateInputShoot()
+        private void updateInputShoot(float deltaTime)
         {
             var shotDirection = new Vector3(Mathf.Cos(_input.ShotRad), 0, Mathf.Sin(_input.ShotRad));
 
             tankFighterCannon.LerpCannonRotation(Time.deltaTime, shotDirection);
+
+            _shotCoolingTime = Math.Max(_shotCoolingTime - deltaTime, 0);
+
+            // ミサイルを打つか確認
+            if (_shotCoolingTime > 0 || _input.ShotRequest.PeekFlag() == false) return;
             
-            if (_input.ShotRequest.PeekFlag()) shootMissile(shotDirection);
+            // 発射
+            _shotCoolingTime = maxShotCoolingTime;
+            shootMissile(shotDirection);
         }
         
         private void shootMissile(Vector3 initialVel)

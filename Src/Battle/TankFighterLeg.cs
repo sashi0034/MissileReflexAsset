@@ -10,8 +10,14 @@ namespace MissileReflex.Src.Battle
     {
         [SerializeField] private GameObject legView;
         [SerializeField] private Animator legAnimator;
+        [SerializeField] private SkinnedMeshRenderer legMesh;
         
         private static readonly AnimHash hashRun = new AnimHash("run");
+
+        public void ChangeMaterial(Material mat)
+        {
+            legMesh.material = mat;
+        }
 
         public void AnimRun(bool hasInput)
         {

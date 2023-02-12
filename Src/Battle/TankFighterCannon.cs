@@ -8,7 +8,13 @@ namespace MissileReflex.Src.Battle
     {
         [SerializeField] private GameObject cannonView;
         [SerializeField] private Animator cannonAnimator;
-
+        [SerializeField] private SkinnedMeshRenderer cannonMesh;
+        
+        public void ChangeMaterial(Material mat)
+        {
+            cannonMesh.material = mat;
+        }
+        
         public void LerpCannonRotation(float deltaTime, Vector3 direction)
         {
             cannonView.transform.localRotation = Quaternion.Euler(
