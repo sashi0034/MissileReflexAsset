@@ -14,6 +14,14 @@ namespace MissileReflex.Src.Params
 #if UNITY_EDITOR
         // [SerializeField] private bool isStartBattleImmediately;
         // public bool IsStartBattleImmediately => isStartBattleImmediately;
+        
+        // git管理できるようにするため作成
+        [Button]
+        public void BackupMirrorFile()
+        {
+            BackupMirrorFile(nameof(DebugParam));
+        }
+
 #endif
     }
 }

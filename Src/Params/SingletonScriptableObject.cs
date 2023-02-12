@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
 namespace MissileReflex.Src.Params
 {
@@ -17,6 +18,13 @@ namespace MissileReflex.Src.Params
 
                 return _instance;
             }
+        }
+
+        protected void BackupMirrorFile(string assetName)
+        {
+            AssetDatabase.CopyAsset(
+                $"Assets/Resources/{assetName}.asset", 
+                $"Assets/{nameof(MissileReflex)}/ScriptableObjectMirror/{assetName}");
         }
     }
 }
