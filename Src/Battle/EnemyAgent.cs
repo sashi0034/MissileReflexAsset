@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using MissileReflex.Src.Utils;
 using UnityEngine;
@@ -47,18 +48,57 @@ namespace MissileReflex.Src.Battle
             while (gameObject != null)
             {
                 await UniTask.Delay(0.1f.ToIntMilli());
-                
-                if (Random.Range(0, 2) == 0) tankIn.ShotRequest.UpFlag();
-                
-                navAi.nextPosition = selfTank.transform.position;
-                navAi.SetDestination(battleRoot.Player.TankPos);
-                
-                var destPos = navAi.steeringTarget;
-                var currPos = selfTank.transform.position;
-                var destVec = destPos - currPos;
 
-                tankIn.SetMoveVec(destVec.normalized);
+                var targetTank = battleRoot.Player.Tank;
+                var targetSqrMag = calcSqrMagSelfWithTargetTank(targetTank);
+
+                var shotRangeSqrMag = 5f * 5f;
+
+                if (targetSqrMag < shotRangeSqrMag)
+                {
+                    // 射程内に入ってるので退き撃ち
+                    await shotWithRetreat(targetTank);
+                }
+                else
+                {
+                    // 射程内に入ってないので目標に近づく
+                    approachrTargetTank(targetTank);
+                }
+                
             }
+        }
+
+        private async UniTask shotWithRetreat(TankFighter targetTank)
+        {
+            var destVec = calcDestVecToTarget(targetTank);
+            var rotatedDestVec = Quaternion.Euler(0, 90, 0) * destVec;
+            tankIn.SetMoveVec(rotatedDestVec.normalized);
+            tankIn.SetShotRadFromVec3(destVec);
+            tankIn.ShotRequest.UpFlag();
+            await UniTask.Delay(0.3f.ToIntMilli());
+        }
+
+        private float calcSqrMagSelfWithTargetTank(TankFighter target)
+        {
+            return (target.transform.position - selfTank.transform.position).sqrMagnitude;
+        }
+
+        private void approachrTargetTank(TankFighter target)
+        {
+            var destVec = calcDestVecToTarget(target);
+
+            tankIn.SetMoveVec(destVec.normalized);
+        }
+
+        private Vector3 calcDestVecToTarget(TankFighter target)
+        {
+            navAi.nextPosition = selfTank.transform.position;
+            navAi.SetDestination(target.transform.position);
+
+            var destPos = navAi.steeringTarget;
+            var currPos = selfTank.transform.position;
+            var destVec = destPos - currPos;
+            return destVec;
         }
 
         private static Vector3 randVecCross()

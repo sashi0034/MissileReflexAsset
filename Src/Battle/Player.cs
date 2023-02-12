@@ -14,10 +14,10 @@ namespace MissileReflex.Src.Battle
         public BattleRoot BattleRoot => battleRoot;
 
         [SerializeField] private TankFighter _selfTank;
-
+        public TankFighter Tank => _selfTank;
+        
         private Camera mainCamera => Camera.main;
 
-        public Vector3 TankPos => _selfTank.transform.position;
 
         public void Init()
         {
@@ -51,7 +51,7 @@ namespace MissileReflex.Src.Battle
 
             var shotDirection = worldMousePos - playerPos;
             
-            _selfTank.Input.SetShotRad(Mathf.Atan2(shotDirection.z, shotDirection.x));
+            _selfTank.Input.SetShotRadFromVec3(shotDirection);
 
             if (Input.GetMouseButtonDown(0)) _selfTank.Input.ShotRequest.UpFlag();
         }

@@ -35,6 +35,12 @@ namespace MissileReflex.Src.Battle
         {
             _shotRad = rad;
         }
+        
+        public void SetShotRadFromVec3(Vector3 vec)
+        {
+            _shotRad = Mathf.Atan2(vec.z, vec.x);
+        }
+
     }
 
     public interface ITankAgent
