@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using MissileReflex.Src.Params;
 using MissileReflex.Src.Utils;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,7 +9,21 @@ using Random = UnityEngine.Random;
 
 namespace MissileReflex.Src.Battle
 {
-    public class EnemyAgent : MonoBehaviour, ITankAgent
+    [Serializable]
+    public class TankAiAgentParam
+    {
+        [SerializeField] private float updateInterval = 0.1f;
+        public float UpdateInterval => updateInterval;
+        
+        [SerializeField] private float shotRange = 5;
+        public float ShotRangeSqrMag => shotRange * shotRange;
+
+        [SerializeField] private float retrieveDuration = 0.3f;
+        public float RetrieveDuration => retrieveDuration;
+    }
+    
+    
+    public class TankAiAgent : MonoBehaviour, ITankAgent
     {
         [SerializeField] private TankFighter selfTank;
         private TankFighterInput tankIn => selfTank.Input;
@@ -19,6 +34,8 @@ namespace MissileReflex.Src.Battle
         [SerializeField] private Material enemyMaterial;
 
         [SerializeField] private NavMeshAgent navAi;
+
+        private TankAiAgentParam param => ConstParam.Instance.TankAiAgentParam;
 
         [EventFunction]
         private void Start()
@@ -47,12 +64,12 @@ namespace MissileReflex.Src.Battle
         {
             while (gameObject != null)
             {
-                await UniTask.Delay(0.1f.ToIntMilli());
+                await UniTask.Delay(param.UpdateInterval.ToIntMilli());
 
                 var targetTank = battleRoot.Player.Tank;
                 var targetSqrMag = calcSqrMagSelfWithTargetTank(targetTank);
 
-                var shotRangeSqrMag = 5f * 5f;
+                var shotRangeSqrMag = param.ShotRangeSqrMag;
 
                 if (targetSqrMag < shotRangeSqrMag)
                 {
@@ -71,11 +88,11 @@ namespace MissileReflex.Src.Battle
         private async UniTask shotWithRetreat(TankFighter targetTank)
         {
             var destVec = calcDestVecToTarget(targetTank);
-            var rotatedDestVec = Quaternion.Euler(0, 90, 0) * destVec;
+            var rotatedDestVec = Quaternion.Euler(0, Random.Range(0, 2) == 0 ? 90 : -90, 0) * destVec;
             tankIn.SetMoveVec(rotatedDestVec.normalized);
             tankIn.SetShotRadFromVec3(destVec);
             tankIn.ShotRequest.UpFlag();
-            await UniTask.Delay(0.3f.ToIntMilli());
+            await UniTask.Delay(param.RetrieveDuration.ToIntMilli());
         }
 
         private float calcSqrMagSelfWithTargetTank(TankFighter target)
